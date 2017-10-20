@@ -113,4 +113,9 @@ int try_claim_pages_via_hotplug(struct page *requested_page,
 
 void my_dump_page(struct page *page, char *msg);
 
+int rampage_remove_memory(u64 start, u64 size);
+
+int rampage_online_pages(unsigned long pfn, unsigned long nr_pages);
+
+int rampage_add_memory(u64 start, u64 size);
 #endif /* PAGE_CLAIMING_H_ */

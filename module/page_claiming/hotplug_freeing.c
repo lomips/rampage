@@ -55,9 +55,10 @@ static int hotplug_bounce(u64 address)
 {
 	int ret;
 
-	ret = remove_memory(address, OFFLINE_AT_ONCE << PAGE_SHIFT);
+	ret = rampage_remove_memory(address, OFFLINE_AT_ONCE << PAGE_SHIFT);
 	if (!ret) {
-		ret = online_pages(address >> PAGE_SHIFT, OFFLINE_AT_ONCE);
+		ret = rampage_add_memory(address,
+					 OFFLINE_AT_ONCE << PAGE_SHIFT);
 		if (ret) {
 			pr_emerg("unclaim failed for pfn %08llx: ret %d\n",
 				 address >> PAGE_SHIFT, ret);

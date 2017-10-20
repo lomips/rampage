@@ -20,6 +20,8 @@
 #include <linux/kernel.h>       /* printk() */
 
 #include <linux/mm.h>
+#include <linux/pfn.h>
+#include <linux/memory_hotplug.h>
 
 void my_dump_page(struct page *page, char *msg)
 {
@@ -35,4 +37,46 @@ void my_dump_page(struct page *page, char *msg)
 	else
 		pr_debug("%s page NULL\n", msg);
 #endif
+}
+
+int rampage_remove_memory(u64 start, u64 size)
+{
+	unsigned long start_pfn, nr_pages;
+	int ret;
+
+	mem_hotplug_begin();
+
+	start_pfn = PFN_DOWN(start);
+	nr_pages = PFN_DOWN(size);
+	ret = offline_pages(start_pfn, nr_pages);
+
+	mem_hotplug_done();
+	return ret;
+}
+
+int rampage_online_pages(unsigned long pfn, unsigned long nr_pages)
+{
+	int ret;
+
+	mem_hotplug_begin();
+
+	ret = online_pages(pfn, nr_pages, MMOP_ONLINE_KEEP);
+
+	mem_hotplug_done();
+	return ret;
+}
+
+int rampage_add_memory(u64 start, u64 size)
+{
+	unsigned long start_pfn, nr_pages;
+	int ret;
+
+	mem_hotplug_begin();
+
+	start_pfn = PFN_DOWN(start);
+	nr_pages = PFN_DOWN(size);
+	ret = online_pages(start_pfn, nr_pages, MMOP_ONLINE_KEEP);
+
+	mem_hotplug_done();
+	return ret;
 }
